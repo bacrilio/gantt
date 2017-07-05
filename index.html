@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Simple Gantt</title>
+	<style>
+		body {
+			font-family: sans-serif;
+			background: #ccc;
+		}
+		#container {
+			margin: 0 auto;
+		}
+	</style>
+	<script src="node_modules/moment/min/moment.min.js"></script>
+	<script src="node_modules/snapsvg/dist/snap.svg-min.js"></script>
+	<script src="dist/gantt.js"></script>
+	<script src="data.js"></script>
+</head>
+<body>
+	<div id="container"></div>
+	<script>
+		var gantt_chart = gantt("container", data);
+	</script>
+</body>
+</html>
