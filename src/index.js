@@ -8,7 +8,7 @@ export default function index(container, tasks, config) {
 
 	var self = {};
 
-	const cols = [40, 130, 100, 65, 65];
+	const cols = [40, 130, 100, 65, 65, 65];
 
 	const statuses = {
 		0: 'беклог',
@@ -90,11 +90,9 @@ export default function index(container, tasks, config) {
 		tasks.length = 0;
 
 		for (let key in groups) {
-			// tasks.push({developer: key, header: 1});
+			tasks.push({developer: key, header: 1});
 			tasks = tasks.concat(groups[key]);
 		}
-
-		console.log(tasks);
 	}
 
 	function prepareContainer() {
@@ -121,6 +119,7 @@ export default function index(container, tasks, config) {
 		self.managers = self.canvas.group();
 		self.status = self.canvas.group();
 		self.time = self.canvas.group();
+		self.fact = self.canvas.group();
 		self.error = self.canvas.group();
 		self.url = self.canvas.group();
 
@@ -129,8 +128,9 @@ export default function index(container, tasks, config) {
 		const pos2 = pos1 + cols[1];
 		const pos3 = pos2 + cols[2];
 		const pos4 = pos3 + cols[3];
+		const pos5 = pos4 + cols[4];
 
-		const all_width = pos4 + cols[4] - 10;
+		const all_width = pos5 + cols[5] - 10;
 
 		tasks.map((task, index) => {
 			let yy = 83 + index * 38;
@@ -170,6 +170,14 @@ export default function index(container, tasks, config) {
 				self.canvas.text(pos4, yy, fittingString(time, 0, cols[4]))
 					.addClass('label').appendTo(self.time);
 			}
+			if(task.spent_time) {
+				let spent_time = moment({hours: 0, minutes: 0}).add(task.spent_time, 'minutes').format('HH:mm');
+				if(task.spent_time > 1440) {
+					spent_time = (Math.floor(task.time / 1440)).toString().concat(' ', spent_time);
+				}
+				self.canvas.text(pos5, yy, fittingString(spent_time, 0, cols[5]))
+					.addClass('label').appendTo(self.fact);
+			}
 			if(task.error) {
 				let btn = self.canvas.rect(5, fill_y, all_width, 38).addClass('error').appendTo(self.error);
 				btn.node.addEventListener('click', (evt) => {
@@ -188,14 +196,17 @@ export default function index(container, tasks, config) {
 			.addClass('header').appendTo(self.status);
 		self.canvas.text(-5 + pos4 + cols[4] / 2, 50, fittingString('Оценка', 1, cols[4]))
 			.addClass('header').appendTo(self.time);
+		self.canvas.text(-5 + pos5 + cols[5] / 2, 50, fittingString('Факт', 1, cols[5]))
+			.addClass('header').appendTo(self.fact);
 
-		const clientHeight = self.gannt.canvas.node.clientHeight;
+		const clientHeight = self.gannt.canvas.node.clientHeight || self.gannt.canvas.node.parentNode.clientHeight;
 
 		self.canvas.rect(0, 0, all_width + 10, clientHeight).addClass('bg').appendTo(self.bg);
 		self.canvas.line(pos1 - 5, 32, pos1 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 		self.canvas.line(pos2 - 5, 32, pos2 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 		self.canvas.line(pos3 - 5, 32, pos3 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 		self.canvas.line(pos4 - 5, 32, pos4 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
+		self.canvas.line(pos5 - 5, 32, pos5 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 
 		self.canvas.attr({
 			height: clientHeight,
@@ -224,7 +235,7 @@ export default function index(container, tasks, config) {
 	function render_menu() {
 		self.btns = self.canvas.group();
 
-		const all_width = cols[0] + cols[1] + cols[2] + cols[3] + cols[4];
+		const all_width = cols[0] + cols[1] + cols[2] + cols[3] + cols[4] + cols[5];
 		const pos = (all_width - 300) / 2;
 
 		const view_modes = ['Day', 'Week', 'Month'];

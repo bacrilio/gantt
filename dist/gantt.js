@@ -69,7 +69,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		var self = {};
 	
-		var cols = [40, 130, 100, 65, 65];
+		var cols = [40, 130, 100, 65, 65, 65];
 	
 		var statuses = {
 			0: 'беклог',
@@ -151,11 +151,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			tasks.length = 0;
 	
 			for (var key in groups) {
-				// tasks.push({developer: key, header: 1});
+				tasks.push({ developer: key, header: 1 });
 				tasks = tasks.concat(groups[key]);
 			}
-	
-			console.log(tasks);
 		}
 	
 		function prepareContainer() {
@@ -184,6 +182,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			self.managers = self.canvas.group();
 			self.status = self.canvas.group();
 			self.time = self.canvas.group();
+			self.fact = self.canvas.group();
 			self.error = self.canvas.group();
 			self.url = self.canvas.group();
 	
@@ -192,8 +191,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			var pos2 = pos1 + cols[1];
 			var pos3 = pos2 + cols[2];
 			var pos4 = pos3 + cols[3];
+			var pos5 = pos4 + cols[4];
 	
-			var all_width = pos4 + cols[4] - 10;
+			var all_width = pos5 + cols[5] - 10;
 	
 			tasks.map(function (task, index) {
 				var yy = 83 + index * 38;
@@ -228,6 +228,13 @@ return /******/ (function(modules) { // webpackBootstrap
 					}
 					self.canvas.text(pos4, yy, fittingString(time, 0, cols[4])).addClass('label').appendTo(self.time);
 				}
+				if (task.spent_time) {
+					var spent_time = moment({ hours: 0, minutes: 0 }).add(task.spent_time, 'minutes').format('HH:mm');
+					if (task.spent_time > 1440) {
+						spent_time = Math.floor(task.time / 1440).toString().concat(' ', spent_time);
+					}
+					self.canvas.text(pos5, yy, fittingString(spent_time, 0, cols[5])).addClass('label').appendTo(self.fact);
+				}
 				if (task.error) {
 					var _btn = self.canvas.rect(5, fill_y, all_width, 38).addClass('error').appendTo(self.error);
 					_btn.node.addEventListener('click', function (evt) {
@@ -241,14 +248,16 @@ return /******/ (function(modules) { // webpackBootstrap
 			self.canvas.text(-5 + pos2 + cols[2] / 2, 50, fittingString('Менеджер', 1, cols[2])).addClass('header').appendTo(self.managers);
 			self.canvas.text(-5 + pos3 + cols[3] / 2, 50, fittingString('Статус', 1, cols[3])).addClass('header').appendTo(self.status);
 			self.canvas.text(-5 + pos4 + cols[4] / 2, 50, fittingString('Оценка', 1, cols[4])).addClass('header').appendTo(self.time);
+			self.canvas.text(-5 + pos5 + cols[5] / 2, 50, fittingString('Факт', 1, cols[5])).addClass('header').appendTo(self.fact);
 	
-			var clientHeight = self.gannt.canvas.node.clientHeight;
+			var clientHeight = self.gannt.canvas.node.clientHeight || self.gannt.canvas.node.parentNode.clientHeight;
 	
 			self.canvas.rect(0, 0, all_width + 10, clientHeight).addClass('bg').appendTo(self.bg);
 			self.canvas.line(pos1 - 5, 32, pos1 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 			self.canvas.line(pos2 - 5, 32, pos2 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 			self.canvas.line(pos3 - 5, 32, pos3 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 			self.canvas.line(pos4 - 5, 32, pos4 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
+			self.canvas.line(pos5 - 5, 32, pos5 - 5, clientHeight - 20).addClass('grid').appendTo(self.grids);
 	
 			self.canvas.attr({
 				height: clientHeight,
@@ -280,7 +289,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		function render_menu() {
 			self.btns = self.canvas.group();
 	
-			var all_width = cols[0] + cols[1] + cols[2] + cols[3] + cols[4];
+			var all_width = cols[0] + cols[1] + cols[2] + cols[3] + cols[4] + cols[5];
 			var pos = (all_width - 300) / 2;
 	
 			var view_modes = ['Day', 'Week', 'Month'];
